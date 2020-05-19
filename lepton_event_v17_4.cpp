@@ -63,7 +63,7 @@ void ZBQLLG(double X);
 //
 //
 double E0, theta_min, theta_max;
-double pi, cos_max, cos_min, cross_sum, cross_max, cross_test, x_min, x_max, theta1, phi1, costheta1, theta2, phi2, costheta2, cross_section, total_xscn, xsctn, k1[3], k2[3], m_e, m_part, m_muon, pol, x, q2, failure, w_mumu, xs1, xs2, xs_max, xs_min, Atgt[100], tgtlen[100], radlen[100], hbarc, W, jacobian, m_pi, phi_JT, delta_w, delta_x, delta_phi, mtgt, ktgt[3], Elab[2], missing_mass, t, delta_t, x_value, q2_T, W_pol, W_unpol, JS, JT[2], Rexp, xmax, theta1_max, theta2_max, phi1_max, phi2_max, temp, delta_log_t, frac_delta_t, delta_Egamma, data_array[200], error_array[200], Egamma_max, E_hi, E_lo, Brem, E_coherent, Egamma;
+double pi, cos_max, cos_min, cross_sum, cross_max, cross_test, x_min, x_max, theta1, phi1, costheta1, theta2, phi2, costheta2, cross_section, total_xscn, xsctn, k1[3], k2[3], m_e, m_part, m_muon, pol, x, q2, failure, w_mumu, xs1, xs2, xs_max, xs_min, Atgt[100], tgtlen[100], radlen[100], c_dens[100], a_den[100], hbarc, W, jacobian, m_pi, phi_JT, delta_w, delta_x, delta_phi, mtgt, ktgt[3], Elab[2], missing_mass, t, delta_t, x_value, q2_T, W_pol, W_unpol, JS, JT[2], Rexp, xmax, theta1_max, theta2_max, phi1_max, phi2_max, temp, delta_log_t, frac_delta_t, delta_Egamma, data_array[200], error_array[200], Egamma_max, E_hi, E_lo, Brem, E_coherent, Egamma;
 int iseed;
 int i, itest[4], nevent, j, nfail, bad_max, i_array, j_array, ztgt, phase_space;
 bool hist_w, hist_x, hist_t, hist_phi_JT, hist_Egamma, output_event, hist_log_t, nuc_FF, muon, electron, pion_hypothesis, brem_init, cobrems;
@@ -88,12 +88,12 @@ delta_w = 0.02, delta_t = 0.0002, delta_x = 0.02, delta_phi = 5.0, frac_delta_t 
 //  Target information
 Atgt[0] = 1.0, tgtlen[0] = 0.0338, radlen[0] = 63.04;//tgtlen = # Rad lengths, radlen = rad length of material in g/cm^2;
 //								this target is based on 30 cm LH2
-Atgt[5] = 12.0, tgtlen[5] = 0.05, radlen[5] = 42.70, density_rho0.c_den[5] = 2.45, density_rho0.a_den[5] = 0.524;//RL is in g/cm^2;
-Atgt[13] = 28.0, tgtlen[13] = 0.05, radlen[13] = 21.82, density_rho0.c_den[13] = 3.14, density_rho0.a_den[13] = 0.537;//units of c_den and a_den are fm;
-Atgt[19] = 40.0, tgtlen[19] = 0.05, radlen[19] = 16.12, density_rho0.c_den[19] = 3.51, density_rho0.a_den[19] = 0.563;//target length is in units of RL;
+Atgt[5] = 12.0, tgtlen[5] = 0.05, radlen[5] = 42.70, c_den[5] = 2.45, a_den[5] = 0.524;//RL is in g/cm^2;
+Atgt[13] = 28.0, tgtlen[13] = 0.05, radlen[13] = 21.82, c_den[13] = 3.14, a_den[13] = 0.537;//units of c_den and a_den are fm;
+Atgt[19] = 40.0, tgtlen[19] = 0.05, radlen[19] = 16.12, c_den[19] = 3.51, a_den[19] = 0.563;//target length is in units of RL;
 Atgt[25] = 56.0, tgtlen[25] = 0.05, radlen[25] = 13.84, c_den[25] = 3.971, a_den[25] = 0.5935;//RL is g/cm^2;
-Atgt[50] = 116.0, tgtlen[50] = 0.05, radlen[50] = 8.82, c_den[50] = 5.416, a_den[50] = 0.552;
-Atgt[82] = 208.0, tgtlen[82] = 0.05, radlen[82] = 6.37;
+Atgt[49] = 116.0, tgtlen[49] = 0.05, radlen[49] = 8.82, c_den[49] = 5.416, a_den[49] = 0.552;
+Atgt[81] = 208.0, tgtlen[81] = 0.05, radlen[81] = 6.37;
 //
 //COMMON/density_rho0/rho0, c_den, a_den//the overall normalization factor for nuclear charge densities
 //
