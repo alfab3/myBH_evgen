@@ -1,5 +1,9 @@
+#include <stdio.h>
+#include <math.h>
+#include <iostream>
+
 struct density_rho0{
-  double rho0, c_den, a_den; //the overall normalization factor for nuclear charge densities
+  double rho0, c_den[100], a_den[100]; //the overall normalization factor for nuclear charge densities
 };
 
 struct ZBQL0001{
@@ -22,19 +26,19 @@ void analysis(double E0, double mtgt, double k1[3], double k2[3], double ktgt[3]
 void density_init(int ztgt);
 double FF(double Q2, int ztgt);;
 void ZBQLINI(int SEED);
-void ZBQLU01(double DUMMY);
-void ZBQLUAB(double A, double B);
-void ZBQLexp(double MU);
-void ZBQLNOR(double MU, double SIGMA);
-void ZBQLBIN(int N, double P);
-void ZBQLGEO(double P);
-void ZBQLPOI(double MU);
-void ZBQLGAM(double G, double H);
-void ZBQLBET1(double NU1, double NU2);
-void ZBQLWEI(double A, double B);
-void ZBQLNB(double R, double P);
-void ZBQLPAR(double A, double B);
-void ZBQLLG(double X);
+//void ZBQLU01(double DUMMY);
+//void ZBQLUAB(double A, double B);
+//void ZBQLexp(double MU);
+//void ZBQLNOR(double MU, double SIGMA);
+//void ZBQLBIN(int N, double P);
+//void ZBQLGEO(double P);
+//void ZBQLPOI(double MU);
+//void ZBQLGAM(double G, double H);
+//void ZBQLBET1(double NU1, double NU2);
+//void ZBQLWEI(double A, double B);
+//void ZBQLNB(double R, double P);
+//void ZBQLPAR(double A, double B);
+//void ZBQLLG(double X);
 
 
 //
@@ -63,9 +67,9 @@ void ZBQLLG(double X);
 //
 //
 double E0, theta_min, theta_max;
-double pi, cos_max, cos_min, cross_sum, cross_max, cross_test, x_min, x_max, theta1, phi1, costheta1, theta2, phi2, costheta2, cross_section, total_xscn, xsctn, k1[3], k2[3], m_e, m_part, m_muon, pol, x, q2, failure, w_mumu, xs1, xs2, xs_max, xs_min, Atgt[100], tgtlen[100], radlen[100], c_dens[100], a_den[100], hbarc, W, jacobian, m_pi, phi_JT, delta_w, delta_x, delta_phi, mtgt, ktgt[3], Elab[2], missing_mass, t, delta_t, x_value, q2_T, W_pol, W_unpol, JS, JT[2], Rexp, xmax, theta1_max, theta2_max, phi1_max, phi2_max, temp, delta_log_t, frac_delta_t, delta_Egamma, data_array[200], error_array[200], Egamma_max, E_hi, E_lo, Brem, E_coherent, Egamma;
+double pi, cos_max, cos_min, cross_sum, cross_max, cross_test, x_min, x_max, theta1, phi1, costheta1, theta2, phi2, costheta2, cross_section, total_xscn, k1[3], k2[3], m_e, m_part, m_muon, pol, x, q2, failure, w_mumu, xs1, xs2, xs_max, xs_min, Atgt[100], tgtlen[100], radlen[100], hbarc, W, jacobian, m_pi, phi_JT, delta_w, delta_x, delta_phi, mtgt, ktgt[3], Elab[2], missing_mass, t, delta_t, x_value, q2_T, W_pol, W_unpol, JS, JT[2], Rexp, xmax, theta1_max, theta2_max, phi1_max, phi2_max, temp, delta_log_t, frac_delta_t, delta_Egamma, data_array[200], error_array[200], Egamma_max, E_hi, E_lo, E_coherent, Egamma;
 int iseed;
-int i, itest[4], nevent, j, nfail, bad_max, i_array, j_array, ztgt, phase_space;
+int i, itest[4], nevent, j, nfail, bad_max, i_array, j_array, ztgt, phase_space; 
 bool hist_w, hist_x, hist_t, hist_phi_JT, hist_Egamma, output_event, hist_log_t, nuc_FF, muon, electron, pion_hypothesis, brem_init, cobrems;
 //
 //	Standard CPP configuration 
@@ -73,32 +77,33 @@ bool hist_w, hist_x, hist_t, hist_phi_JT, hist_Egamma, output_event, hist_log_t,
 //
 //	Standard GlueX configuration
 //	data ztgt,E0,E_coherent,pol,theta_min,theta_max /1,11.0,8.7,1.0,0.90,13.12/	//standard GlueX config., min and max angles in deg. to TOF
-ztgt = 1, E0 = 11.0, E_coherent = 8.7, pol = 1.0, theta_min = 0.090, theta_max = 13.12;///standard GlueX config., min and max angles in deg. to TOF;
+int main(){
+    ztgt = 1, E0 = 11.0, E_coherent = 8.7, pol = 1.0, theta_min = 0.090, theta_max = 13.12;///standard GlueX config., min and max angles in deg. to TOF;
 //
 //	Set tagging interval
-E_hi = 8.8, E_lo = 8.6;
+    E_hi = 8.8, E_lo = 8.6;
 //
-itest[0] = 100000, itest[1] = 1000000, itest[2] = 10000000, itest[3] = 100000000, nevent = 10;
-m_e = 0.000511, m_muon 0.105658, m_pi = 0.139570, hbarc = 0.197;
+    itest[0] = 100000, itest[1] = 1000000, itest[2] = 10000000, itest[3] = 100000000, nevent = 10;
+    m_e = 0.000511, m_muon = 0.105658, m_pi = 0.139570, hbarc = 0.197;
 //	
 //  Histogram parameters
-delta_w = 0.02, delta_t = 0.0002, delta_x = 0.02, delta_phi = 5.0, frac_delta_t = 0.2, delta_Egamma = 0.05; //units of GeV, GeV^2, //DIMENSIONless, degrees,
+    delta_w = 0.02, delta_t = 0.0002, delta_x = 0.02, delta_phi = 5.0, frac_delta_t = 0.2, delta_Egamma = 0.05; //units of GeV, GeV^2, //DIMENSIONless, degrees,
 //											fractional bin width in t, GeV
 //
 //  Target information
-Atgt[0] = 1.0, tgtlen[0] = 0.0338, radlen[0] = 63.04;//tgtlen = # Rad lengths, radlen = rad length of material in g/cm^2;
+    Atgt[0] = 1.0, tgtlen[0] = 0.0338, radlen[0] = 63.04;//tgtlen = # Rad lengths, radlen = rad length of material in g/cm^2;
 //								this target is based on 30 cm LH2
-Atgt[5] = 12.0, tgtlen[5] = 0.05, radlen[5] = 42.70, c_den[5] = 2.45, a_den[5] = 0.524;//RL is in g/cm^2;
-Atgt[13] = 28.0, tgtlen[13] = 0.05, radlen[13] = 21.82, c_den[13] = 3.14, a_den[13] = 0.537;//units of c_den and a_den are fm;
-Atgt[19] = 40.0, tgtlen[19] = 0.05, radlen[19] = 16.12, c_den[19] = 3.51, a_den[19] = 0.563;//target length is in units of RL;
-Atgt[25] = 56.0, tgtlen[25] = 0.05, radlen[25] = 13.84, c_den[25] = 3.971, a_den[25] = 0.5935;//RL is g/cm^2;
-Atgt[49] = 116.0, tgtlen[49] = 0.05, radlen[49] = 8.82, c_den[49] = 5.416, a_den[49] = 0.552;
-Atgt[81] = 208.0, tgtlen[81] = 0.05, radlen[81] = 6.37;
+    Atgt[5] = 12.0, tgtlen[5] = 0.05, radlen[5] = 42.70, density_rho0.c_den[5] = 2.45, density_rho0.a_den[5] = 0.524;//RL is in g/cm^2;
+    Atgt[13] = 28.0, tgtlen[13] = 0.05, radlen[13] = 21.82, density_rho0.c_den[13] = 3.14, density_rho0.a_den[13] = 0.537;//units of c_den and a_den are fm;
+    Atgt[19] = 40.0, tgtlen[19] = 0.05, radlen[19] = 16.12, density_rho0.c_den[19] = 3.51, density_rho0.a_den[19] = 0.563;//target length is in units of RL;
+    Atgt[25] = 56.0, tgtlen[25] = 0.05, radlen[25] = 13.84, density_rho0.c_den[25] = 3.971,density_rho0.a_den[25] = 0.5935;//RL is g/cm^2;
+    Atgt[49] = 116.0, tgtlen[49] = 0.05, radlen[49] = 8.82, density_rho0.c_den[49] = 5.416, density_rho0.a_den[49] = 0.552;
+    Atgt[81] = 208.0, tgtlen[81] = 0.05, radlen[81] = 6.37;
 //
 //COMMON/density_rho0/rho0, c_den, a_den//the overall normalization factor for nuclear charge densities
 //
-double ZBQLUAB, zlo, zhi;
-double zlo = 0.0, zhi = 1.0;
+    double ZBQLUAB, zlo, zhi;
+    double zlo = 0.0, zhi = 1.0;
 //
 //      BLOCK DATA ZBQLBD01
 //
@@ -106,221 +111,221 @@ double zlo = 0.0, zhi = 1.0;
 //       The values below have themselves been generated using the
 //       NAG generator.
 //
-double ZBQLIX[43], B, C;
+    double ZBQLIX[43], B, C;
 //COMMON/ZBQL0001/ZBQLIX, B, C
 //      INTEGER I
-ZBQLIX[0] = 8.001441;
-ZBQLIX[1] = 5.5321801;
-ZBQLIX[2] = 1.69570999;
-ZBQLIX[3] = 2.88589930;
-ZBQLIX[4] = 2.91581871;
-ZBQLIX[5] = 1.03842493;
-ZBQLIX[6] = 7.9952507;
-ZBQLIX[7] = 3.81202335;
-ZBQLIX[8] = 3.11575334;
-ZBQLIX[9] = 4.02878631;
-ZBQLIX[10] = 2.49757109;
-ZBQLIX[11] = 1.15192595;
-ZBQLIX[12] = 2.10629619;
-ZBQLIX[13] = 3.99952890;
-ZBQLIX[14] = 4.12280521;
-ZBQLIX[15] = 1.33873288;
-ZBQLIX[16] = 7.1345525;
-ZBQLIX[17] = 2.23467704;
-ZBQLIX[18] = 2.82934796;
-ZBQLIX[19] = 9.9756750;
-ZBQLIX[20] = 1.68564303;
-ZBQLIX[21] = 2.86817366;
-ZBQLIX[22] = 1.14310713;
-ZBQLIX[23] = 3.47045253;
-ZBQLIX[24] = 9.3762426;
-ZBQLIX[25] = 1.09670477;
-ZBQLIX[26] = 3.20029657;
-ZBQLIX[27] = 3.26369301;
-ZBQLIX[28] = 9.441177;
-ZBQLIX[29] = 3.53244738;
-ZBQLIX[30] = 2.44771580;
-ZBQLIX[31] = 1.59804337;
-ZBQLIX[32] = 2.07319904;
-ZBQLIX[33] = 3.37342907;
-ZBQLIX[34] = 3.75423178;
-ZBQLIX[35] = 7.0893571;
-ZBQLIX[36] = 4.26059785;
-ZBQLIX[37] = 3.95854390;
-ZBQLIX[38] = 2.0081010;
-ZBQLIX[39] = 5.9250059;
-ZBQLIX[40] = 1.62176640;
-ZBQLIX[41] = 3.20429173;
-ZBQLIX[42] = 2.63576576;
+    ZBQLIX[0] = 8.001441;
+    ZBQLIX[1] = 5.5321801;
+    ZBQLIX[2] = 1.69570999;
+    ZBQLIX[3] = 2.88589930;
+    ZBQLIX[4] = 2.91581871;
+    ZBQLIX[5] = 1.03842493;
+    ZBQLIX[6] = 7.9952507;
+    ZBQLIX[7] = 3.81202335;
+    ZBQLIX[8] = 3.11575334;
+    ZBQLIX[9] = 4.02878631;
+    ZBQLIX[10] = 2.49757109;
+    ZBQLIX[11] = 1.15192595;
+    ZBQLIX[12] = 2.10629619;
+    ZBQLIX[13] = 3.99952890;
+    ZBQLIX[14] = 4.12280521;
+    ZBQLIX[15] = 1.33873288;
+    ZBQLIX[16] = 7.1345525;
+    ZBQLIX[17] = 2.23467704;
+    ZBQLIX[18] = 2.82934796;
+    ZBQLIX[19] = 9.9756750;
+    ZBQLIX[20] = 1.68564303;
+    ZBQLIX[21] = 2.86817366;
+    ZBQLIX[22] = 1.14310713;
+    ZBQLIX[23] = 3.47045253;
+    ZBQLIX[24] = 9.3762426;
+    ZBQLIX[25] = 1.09670477;
+    ZBQLIX[26] = 3.20029657;
+    ZBQLIX[27] = 3.26369301;
+    ZBQLIX[28] = 9.441177;
+    ZBQLIX[29] = 3.53244738;
+    ZBQLIX[30] = 2.44771580;
+    ZBQLIX[31] = 1.59804337;
+    ZBQLIX[32] = 2.07319904;
+    ZBQLIX[33] = 3.37342907;
+    ZBQLIX[34] = 3.75423178;
+    ZBQLIX[35] = 7.0893571;
+    ZBQLIX[36] = 4.26059785;
+    ZBQLIX[37] = 3.95854390;
+    ZBQLIX[38] = 2.0081010;
+    ZBQLIX[39] = 5.9250059;
+    ZBQLIX[40] = 1.62176640;
+    ZBQLIX[41] = 3.20429173;
+    ZBQLIX[42] = 2.63576576;
 
-double B = 4.294967291;
-double C = 0.0;
+    double B = 4.294967291;
+    double C = 0.0;
 //
-iseed = 0;//set equal to 0 for the // program to do a call to the system clock to initialize random number generator;
+    iseed = 0;//set equal to 0 for the // program to do a call to the system clock to initialize random number generator;
 //			!for random number initialization
-ZBQLINI(ISEED);
+    ZBQLINI(iseed);
 //
 //  Initializations
 //
-temp = -1;
-pi = dacos(temp);
+    temp = -1;
+    pi = acos(temp);
 //
 //Find the delta log t step
-delta_log_t = log10(1. + frac_delta_t);
+    delta_log_t = log10(1. + frac_delta_t);
 
 //Set target mass in GeV
-mtgt = Atgt[ztgt]*0.931494;
-if (ztgt == 1) {mtgt = 0.93828}
+    mtgt = Atgt[ztgt]*0.931494;
+    if (ztgt == 1) mtgt = 0.93828;
 //
-do {
-  data_array[i] = 0;
-  error_array[i] = 0;
-  i++;
-}while(i < 200);
+    do{
+        data_array[i] = 0;
+        error_array[i] = 0;
+        i++;
+    }while(i < 200);
 
 //Initialize Brem. distribution: select 1/Egamma or coherent Brems. file
-cobrems = true;//set true for scanfing coherent Brems. file, false for using a 1/Egamma distribution;
-if(cobrems == true) 
+    cobrems = true;//set true for scanfing coherent Brems. file, false for using a 1/Egamma distribution;
+    if(cobrems == true) 
 { // scanf coherent Brem. file
-  brem_init = true;
-  temp = Brem(brem_init, cobrems, E0, Egamma);//scanf coherent brems file, then set brem_init = false;
+    brem_init = true;
+    temp = Brem(brem_init, cobrems, E0, Egamma);//scanf coherent brems file, then set brem_init = false;
 }
 
 //Start logical assignments
 
 //Only one of the histogram logicals can be true, the rest must be false.   The event output can be turned on independent of histograming. 
-hist_w = false;
-hist_x = false;
-hist_t = false;
-hist_phi_JT = false;
-hist_log_t = false;
-hist_Egamma = false;
-output_event = true;
+    hist_w = false;
+    hist_x = false;
+    hist_t = false;
+    hist_phi_JT = false;
+    hist_log_t = false;
+    hist_Egamma = false;
+    output_event = true;
 //Logical assignments
-phase_space = 4;//theta = x**phase_space, with int phase_space >1 . Note: phase_space = 4 seems to be fastest.;
+    phase_space = 4;//theta = x**phase_space, with int phase_space >1 . Note: phase_space = 4 seems to be fastest.;
 //Set phase_space=0 for standard dcos theta/dx =1
-Rexp = float(phase_space);
-nuc_FF = true;
-muon = false;//this is how you change the particle type
+    Rexp = float(phase_space);
+    nuc_FF = true;
+    muon = false;//this is how you change the particle type
 //electron = .not.muon;
-if (muon == true) 
-{
-  m_part = m_muon;
-  pion_hypothesis = false; //set true if you want calculated invariant masses with pion assumption;
-}else{
-  m_part = m_e;
-  pion_hypothesis = false;//should always have this set false since we can distinguish e from mu;
-}
+    if (muon == true) 
+    {
+        m_part = m_muon;
+        pion_hypothesis = false; //set true if you want calculated invariant masses with pion assumption;
+    }else{
+        m_part = m_e;
+        pion_hypothesis = false;//should always have this set false since we can distinguish e from mu;
+    }
 //
-if (nuc_FF) 
-{// setup the nuclear form factors
-  c_den[ztgt] = c_den[ztgt]/hbarc;
-  a_den[ztgt] = a_den[ztgt]/hbarc;
-  density_init(ztgt); //for initializing the nuclear form factor(density_rho0.rho0 is density const.);
-}
+    if (nuc_FF) 
+    {// setup the nuclear form factors
+        density_rho0.c_den[ztgt] = density_rho0.c_den[ztgt]/hbarc;
+        density_rho0.a_den[ztgt] = density_rho0.a_den[ztgt]/hbarc;
+        density_init(ztgt); //for initializing the nuclear form factor(density_rho0.rho0 is density const.);
+    }
 //
-if (hist_w) || (hist_x) || (hist_t) || (hist_phi_JT) || (hist_log_t) || (hist_Egamma) fopen(unit = 2, status = "new", file = "lepton_v17_4_hist.txt");
-if (output_event) fopen(unit = 4, status = "new", file = "lepton_v17_4_event.txt");
+    if((hist_w) || (hist_x) || (hist_t) || (hist_phi_JT) || (hist_log_t) || (hist_Egamma)) fopen("lepton_v17_4_hist.txt","w");
+    if (output_event) fopen("lepton_v17_4_event.txt", "w");
 //
 //	End logical assignments
 //
 //***********************************
 //	Evaluate the cross section at one kinematic point at coherent peak
-x = 0.5;
-theta1 = theta_min*(pi/180);
-theta2 = theta_min*(pi/180);
-phi1 = 90*(pi/180);
-phi2 = 270*(pi/180);
-cross_section = xsctn(E_coherent, ztgt, x, theta1, phi1, theta2, phi2, pol, m_part, nuc_FF, phi_JT, k1, k2);
-std::cout <<  " cross section nb/sr^2 = " <<  cross_section << "\n";
+    x = 0.5;
+    theta1 = theta_min*(pi/180);
+    theta2 = theta_min*(pi/180);
+    phi1 = 90*(pi/180);
+    phi2 = 270*(pi/180);
+    cross_section = xsctn(E_coherent, ztgt, x, theta1, phi1, theta2, phi2, pol, m_part, nuc_FF, phi_JT, k1, k2);
+    std::cout << " cross section nb/sr^2 = " << cross_section << "\n";
 //*************************************
-theta_min = theta_min*pi/180;//switch to radians;
-theta_max = theta_max*pi/180;
-cos_max = cos(theta_min);
-cos_min = cos(theta_max);
+    theta_min = theta_min*pi/180;//switch to radians;
+    theta_max = theta_max*pi/180;
+    cos_max = cos(theta_min);
+    cos_min = cos(theta_max);
 // Limits on xs
-if (phase_space == 0){//dcos theta/dx = 1
-  xs_max = cos_max;
-  xs_min = cos_min;
-}else{
-  xs_max = pow(theta_max, 1/Rexp);
-  xs_min = pow(theta_min, 1/Rexp);
-}
+    if (phase_space == 0){//dcos theta/dx = 1
+        xs_max = cos_max;
+        xs_min = cos_min;
+    }else{
+        xs_max = pow(theta_max, 1/Rexp);
+        xs_min = pow(theta_min, 1/Rexp);
+    }
 //
 //***************************************************************************
 //
-int j = 0;
-int i = 0;
-do{//loop over 4 samplings of the phase space, each a factor of x10 larger, to see if the maximum
+    j = 0;
+    i = 0;
+    do{//loop over 4 samplings of the phase space, each a factor of x10 larger, to see if the maximum
 //cross section*Brem converges
-  cross_max = 0;
-  do{//find maximum cross section in allowed phase space
-    Egamma = ZBQLUAB(E_lo, E_hi);//get tagged photon energy
-    x = 0.5;//x_min + (x_max - x_min)*ZBQLUAB(zlo, zhi)//make a guess for the energy fraction
-    phi1 = 90*pi/180;//2.*pi*ZBQLUAB(zlo, zhi)//make a guess for phi1
-    phi2 = 270*pi/180;//2.*pi*ZBQLUAB(zlo, zhi)//make a guess for phi2
-    xs2 = ZBQLUAB(xs_min, xs_max);
-    if (phase_space == 0) {// dcos theta/dx = 1
-      theta1 = theta_min;//make a guess for theta1
-      theta2 = acos(xs2);
-      jacobian = 1;
-    }else{
-      theta1 = theta_min;//make a guess for theta1
-      xs1 = pow(theta_min, (1/Rexp));
-      theta2 = pow(xs2, phase_space);
-      jacobian = (Rexp * pow(xs1, (phase_space - 1)) * sin(pow(xs1, phase_space))) * (Rexp * pow(xs2,(phase_space - 1)) * sin(pow(xs2,phase_space)));
-    }
-    cross_section = xsctn(Egamma, ztgt, x, theta1, phi1, theta2, phi2, pol, m_part, nuc_FF, phi_JT, k1, k2)*jacobian*Brem(brem_init, cobrems, E0, Egamma);
-    if(cross_section > cross_max) {
-      cross_max = cross_section;
-      Egamma_max = Egamma;
-      xmax = x;
-      theta1_max = theta1*180/pi;
-      theta2_max = theta2*180/pi;
-      phi1_max = phi1*180/pi;
-      phi2_max = phi2*180/pi;
-      i++;
-    }
-  }while(i < itest[j]);
-  std::cout << "test events " << itest[j] <<  " maximum xsctn*Brem " <<  cross_max << "\n";
-  std::cout << "Egamma max " << Egamma_max << " x max " << xmax << " theta1 max " << theta1_max << " theta2 max " << theta2_max << " phi1 max " << phi1_max << " phi2 max " <<  phi2_max + "\n";
-  j++;
-}while(j < 4);
+    cross_max = 0;
+    do{//find maximum cross section in allowed phase space
+        Egamma = ZBQLUAB(E_lo, E_hi);//get tagged photon energy
+        x = 0.5;//x_min + (x_max - x_min)*ZBQLUAB(zlo, zhi)//make a guess for the energy fraction
+        phi1 = 90*pi/180;//2.*pi*ZBQLUAB(zlo, zhi)//make a guess for phi1
+        phi2 = 270*pi/180;//2.*pi*ZBQLUAB(zlo, zhi)//make a guess for phi2
+        xs2 = ZBQLUAB(xs_min, xs_max);
+        if (phase_space == 0) {// dcos theta/dx = 1
+            theta1 = theta_min;//make a guess for theta1
+            theta2 = acos(xs2);
+            jacobian = 1;
+        }else{
+            theta1 = theta_min;//make a guess for theta1
+            xs1 = pow(theta_min, (1/Rexp));
+            theta2 = pow(xs2, phase_space);
+            jacobian = (Rexp * pow(xs1, (phase_space - 1)) * sin(pow(xs1, phase_space))) * (Rexp * pow(xs2,(phase_space - 1)) * sin(pow(xs2,phase_space)));
+        }
+        cross_section = xsctn(Egamma, ztgt, x, theta1, phi1, theta2, phi2, pol, m_part, nuc_FF, phi_JT, k1, k2)*jacobian*Brem(brem_init, cobrems, E0, Egamma);
+        if(cross_section > cross_max){
+            cross_max = cross_section;
+            Egamma_max = Egamma;
+            xmax = x;
+            theta1_max = theta1*180/pi;
+            theta2_max = theta2*180/pi;
+            phi1_max = phi1*180/pi;
+            phi2_max = phi2*180/pi;
+            i++;
+        }
+    }while(i < itest[j]);
+    std::cout << "test events " << itest[j] <<  " maximum xsctn*Brem " <<  cross_max << "\n";
+    std::cout << "Egamma max " << Egamma_max << " x max " << xmax << " theta1 max " << theta1_max << " theta2 max " << theta2_max << " phi1 max " << phi1_max << " phi2 max " <<  phi2_max + "\n";
+    j++;
+    }while(j < 4);
 //
 //**********************************************************************************************************
 // Loop over 4 samplings of the phase space at coherent peak, each a factor of x10 larger, to see if the integrated cross section converges
 // Set limits on energy fraction
-int j = 0;
-int i = 0;
-x_max = (E_coherent - m_part)/E_coherent;
-x_min = m_part/E_coherent;
+    j = 0;
+    i = 0;
+    x_max = (E_coherent - m_part)/E_coherent;
+    x_min = m_part/E_coherent;
 //
-do{//loop over 4 samplings of the phase space, each a factor of x10 larger, to see if the integrated
+    do{//loop over 4 samplings of the phase space, each a factor of x10 larger, to see if the integrated
 //cross section at the coherent peak converges
-cross_sum = 0;
- do{
-   x = x_min + (x_max - x_min)*ZBQLUAB(zlo, zhi);//energy fraction
-   phi1 = 2*pi*ZBQLUAB(zlo, zhi);
-   phi2 = 2*pi*ZBQLUAB(zlo, zhi);
-   xs1 = ZBQLUAB(xs_min, xs_max);
-   xs2 = ZBQLUAB(xs_min, xs_max);
-   if (phase_space == 0){// dcos theta/dx = 1
-     theta1 = acos(xs1);
-     theta2 = acos(xs2);
-     jacobian = 1;
-   }else{
-     theta1 = pow(xs1,phase_space);
-     theta2 = pow(xs2,phase_space);
-     jacobian = (Rexp * pow(xs1,(phase_space - 1)) * sin(pow(xs1,phase_space))) * (Rexp*pow(xs2,(phase_space-1))*sin(pow(xs2,phase_space)));
-   }
-   cross_section = xsctn(E_coherent, ztgt, x, theta1, phi1, theta2, phi2, pol, m_part, nuc_FF, phi_JT, k1, k2)*jacobian;
-   cross_sum = cross_sum + cross_section;
-   i++;
- }while(0 < itest(j));
- total_xscn = cross_sum/float(itest[j])*pow((xs_max - xs_min), 2)*pow((2*pi), 2) * (x_max - x_min);
- std::cout << "test events " << itest[j] << " Egamma " <<  E_coherent << " total cross section nb " <<  total_xscn << "\n";
- j++;
-}while(j < 4);
+    cross_sum = 0;
+    do{
+        x = x_min + (x_max - x_min)*ZBQLUAB(zlo, zhi);//energy fraction
+        phi1 = 2*pi*ZBQLUAB(zlo, zhi);
+        phi2 = 2*pi*ZBQLUAB(zlo, zhi);
+        xs1 = ZBQLUAB(xs_min, xs_max);
+        xs2 = ZBQLUAB(xs_min, xs_max);
+        if (phase_space == 0){// dcos theta/dx = 1
+            theta1 = acos(xs1);
+            theta2 = acos(xs2);
+            jacobian = 1;
+        }else{
+            theta1 = pow(xs1,phase_space);
+            theta2 = pow(xs2,phase_space);
+            jacobian = (Rexp * pow(xs1,(phase_space - 1)) * sin(pow(xs1,phase_space))) * (Rexp*pow(xs2,(phase_space-1))*sin(pow(xs2,phase_space)));
+        }
+        cross_section = xsctn(E_coherent, ztgt, x, theta1, phi1, theta2, phi2, pol, m_part, nuc_FF, phi_JT, k1, k2)*jacobian;
+        cross_sum = cross_sum + cross_section;
+        i++;
+    }while(0 < itest(j));
+    total_xscn = cross_sum/float(itest[j])*pow((xs_max - xs_min), 2)*pow((2*pi), 2) * (x_max - x_min);
+    std::cout << "test events " << itest[j] << " Egamma " <<  E_coherent << " total cross section nb " <<  total_xscn << "\n";
+    j++;
+    }while(j < 4);
 
 
 //*************************************************************************
@@ -328,105 +333,105 @@ cross_sum = 0;
 //	Start event generation
 //
 //Use the widest possible range in x by using the maximum accepted tagged photon energy, then test it
-x_max = (E_hi - m_part)/E_hi//largest possible x;
-x_min = m_part/E_hi//smallest possible x;
+    x_max = (E_hi - m_part)/E_hi;//largest possible x
+    x_min = m_part/E_hi;//smallest possible x
 //
-nfail = 0;
-bad_max = 0;
+    nfail = 0;
+    bad_max = 0;
 //
-do{
- g100:
+    do{
+    g100:
 
-  Eg2.63576576D8amma = ZBQLUAB(E_lo, E_hi);//get tagged photon energy
-  x = ZBQLUAB(x_min, x_max);//energy fraction
+        Eg2.63576576D8amma = ZBQLUAB(E_lo, E_hi);//get tagged photon energy
+        x = ZBQLUAB(x_min, x_max);//energy fraction
   //	Test x to make sure it's within the allowed range for the photon energy Egamma
-  if (x >= ((Egamma - m_part)/Egamma)) || (x <= (m_part/Egamma)){goto g100} // x is out of range, try again
-  phi1 = 2.*pi*ZBQLUAB(zlo, zhi);
-  phi2 = 2.*pi*ZBQLUAB(zlo, zhi);
-  xs1 = ZBQLUAB(xs_min, xs_max);
-  xs2 = ZBQLUAB(xs_min, xs_max);
+        if (x >= ((Egamma - m_part)/Egamma)) || (x <= (m_part/Egamma)){goto g100} // x is out of range, try again
+        phi1 = 2.*pi*ZBQLUAB(zlo, zhi);
+        phi2 = 2.*pi*ZBQLUAB(zlo, zhi);
+        xs1 = ZBQLUAB(xs_min, xs_max);
+        xs2 = ZBQLUAB(xs_min, xs_max);
 //
-  if(phase_space == 0){// dcos theta/dx = 1
-    theta1 = acos(xs1);
-    theta2 = acos(xs2);
-    jacobian = 1;
-  }else{
-    theta1 = pow(xs1, phase_space);
-    theta2 = pow(xs2, phase_space);
-    jacobian = (Rexp * pow(xs1,(phase_space_1)) * sin(pow(xs1,phase_space))) * (Rexp*pow(xs2,(phase_space-1)) * sin(pow(xs2,phase_space)));
-  }
+        if(phase_space == 0){// dcos theta/dx = 1
+            theta1 = acos(xs1);
+            theta2 = acos(xs2);
+            jacobian = 1;
+        }else{
+            theta1 = pow(xs1, phase_space);
+            theta2 = pow(xs2, phase_space);
+            jacobian = (Rexp * pow(xs1,(phase_space_1)) * sin(pow(xs1,phase_space))) * (Rexp*pow(xs2,(phase_space-1)) * sin(pow(xs2,phase_space)));
+        }
 
-  cross_section = xsctn(Egamma, ztgt, x, theta1, phi1, theta2, phi2, pol, m_part, nuc_FF, phi_JT, k1, k2)*jacobian*Brem(brem_init, cobrems, E0, Egamma);
-  if (cross_section > cross_max){
-    bad_max = bad_max + 1;//an occurrence of cross section larger than cross_max, not supposed to happen
-    std::cout <<  "bad max cross section= " <<  cross_section << "\n";
-  }
-  cross_test = cross_max*ZBQLUAB(zlo, zhi);
-  if (cross_test > cross_section){//selection fails
-    nfail = nfail + 1;
-    goto g100;
-  }
+        cross_section = xsctn(Egamma, ztgt, x, theta1, phi1, theta2, phi2, pol, m_part, nuc_FF, phi_JT, k1, k2)*jacobian*Brem(brem_init, cobrems, E0, Egamma);
+        if (cross_section > cross_max){
+            bad_max = bad_max + 1;//an occurrence of cross section larger than cross_max, not supposed to happen
+            std::cout <<  "bad max cross section= " <<  cross_section << "\n";
+        }
+        cross_test = cross_max*ZBQLUAB(zlo, zhi);
+        if (cross_test > cross_section){//selection fails
+            nfail = nfail + 1;
+            goto g100;
+        }
 //	Event selection succeeds: 
 //
-  analysis(Egamma, mtgt, k1, k2, ktgt, w_mumu, t, missing_mass, m_part, pion_hypothesis)//analyze the event;
+        analysis(Egamma, mtgt, k1, k2, ktgt, w_mumu, t, missing_mass, m_part, pion_hypothesis);//analyze the event;
 //							
 //		Do the histogramming
 //
-  if(hist_w){i_array = nint((w_mumu - 0.200)/delta_w)}//w distribution;
-  if(hist_x){i_array = nint(x/delta_x)}//x distribution
-  if(hist_t){i_array = nint(t/delta_t)}//t distribution;
-  if(hist_phi_JT){i_array = nint(phi_JT*180/pi/delta_phi)} //JT phi distribution in degrees;
-  if(hist_log_t){i_array = nint((log10(t) + 6)/delta_log_t)}// 10^ - 6 GeV^2 is bin 0;
-  if(hist_Egamma){i_array = nint(Egamma/delta_Egamma)}//photon energy distribution;
-  if(i_array < 0){i_array = 0};
-  if (i_array > 200){i_array = 200};
-  data_array[i_array] = data_array[i_array] + 1;
+        if(hist_w) i_array = nint((w_mumu - 0.200)/delta_w);//w distribution;
+        if(hist_x) i_array = nint(x/delta_x);//x distribution
+        if(hist_t) i_array = nint(t/delta_t);//t distribution;
+        if(hist_phi_JT) i_array = nint(phi_JT*180/pi/delta_phi); //JT phi distribution in degrees;
+        if(hist_log_t) i_array = nint((log10(t) + 6)/delta_log_t);// 10^ - 6 GeV^2 is bin 0;
+        if(hist_Egamma) i_array = nint(Egamma/delta_Egamma);//photon energy distribution;
+        if(i_array < 0) i_array = 0;
+        if (i_array > 200) i_array = 200;
+        data_array[i_array] = data_array[i_array] + 1;
 //
 //	3-momentum event output
-  if(output_event) {printf(4, 200) Egamma, k1[1], k1[2], k1[3], k2[1], k2[2], k2[3], ktgt[1], ktgt[2], ktgt[3]};
+        if(output_event) {printf(4, 200) Egamma, k1[1], k1[2], k1[3], k2[1], k2[2], k2[3], ktgt[1], ktgt[2], ktgt[3]};
 g200:
 // format(2x, f6.3, 1x, 9(f10.6, 1x))
 //
-  if (mod(i, 100) == 0) {std::cout << ' event # ' << i}
-}while(i < nevent);
+        if (mod(i, 100) == 0) {std::cout << ' event # ' << i}
+    }while(i < nevent);
 
 
 //
 //   Event generation ends
 //	
-float failure = float(nfail)/float(nevent);
-std::cout <<  "Failures per event = " << failure << " Events with cross section exceeding max xsctn = " << bad_max << "\n";
+    float failure = float(nfail)/float(nevent);
+    std::cout <<  "Failures per event = " << failure << " Events with cross section exceeding max xsctn = " << bad_max << "\n";
 //
-int i = 0;
-do{//printf out the arrays
-  if(hist_w){
-    x_value = float(i)*delta_w + 0.200;
-    error_array[i] = sqrt(data_array[i]);
-    printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
-  }else if (hist_x){
-    x_value = float(i)*delta_x;
-    error_array[i] = sqrt(data_array[i]);
-    printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
-  }else if(hist_t){
-    x_value = float(i)*delta_t;
-    error_array[i] = sqrt(data_array[i]);
-    printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
-  }else if(hist_phi_JT){
-    x_value = float(i)*delta_phi;
-    if((x_value == 0.) || (x_value == 360.)){data_array[i] = 2.*data_array[i]} // this is a binning problem
-    error_array[i] = sqrt(data_array[i]);
-    printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
-  }else if(hist_log_t){
-    x_value = pow(10,(float[i]*delta_log_t-6));
-    error_array[i] = sqrt(data_array[i])/(pow(10,(float[i+1]*delta_log_t-6)) - pow(10,(float[i-1]*delta_log_t - 6))) * 2;
-    data_array[i] = data_array(i)/(pow(10,(float[i+1]*delta_log_t-6)) - pow(10,(float[i-1]*delta_log_t - 6))) * 2;
-    printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
-  }else if(hist_Egamma){
-    x_value = float(i)*delta_Egamma;
-    error_array[i] = sqrt(data_array[i]);
-    printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
-  }
- }while(i < 200);
+    int i = 0;
+    do{//printf out the arrays
+        if(hist_w){
+        x_value = float(i)*delta_w + 0.200;
+        error_array[i] = sqrt(data_array[i]);
+        printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
+        }else if (hist_x){
+            x_value = float(i)*delta_x;
+            error_array[i] = sqrt(data_array[i]);
+            printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
+        }else if(hist_t){
+            x_value = float(i)*delta_t;
+            error_array[i] = sqrt(data_array[i]);
+            printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
+        }else if(hist_phi_JT){
+            x_value = float(i)*delta_phi;
+            if((x_value == 0.) || (x_value == 360.)) data_array[i] = 2.*data_array[i]; // this is a binning problem
+            error_array[i] = sqrt(data_array[i]);
+            printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
+        }else if(hist_log_t){
+            x_value = pow(10,(float[i]*delta_log_t-6));
+            error_array[i] = sqrt(data_array[i])/(pow(10,(float[i+1]*delta_log_t-6)) - pow(10,(float[i-1]*delta_log_t - 6))) * 2;
+            data_array[i] = data_array(i)/(pow(10,(float[i+1]*delta_log_t-6)) - pow(10,(float[i-1]*delta_log_t - 6))) * 2;
+            printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
+        }else if(hist_Egamma){
+            x_value = float(i)*delta_Egamma;
+            error_array[i] = sqrt(data_array[i]);
+            printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
+        }
+    }while(i < 200);
 
 
 //
@@ -446,7 +451,7 @@ double Brem(bool brem_init, bool cobrems, double E0, double Egamma){
     bool brem_init, cobrems;
     //COMMON/Brem_spect/Eg, Br
     //	
-    Brem = 0;
+    //Brem = 0;
     //
     if (brem_init){//fopen and scanf coherent Brem file
       fopen(unit = 2, file = "CobremsDistribution.dat");
