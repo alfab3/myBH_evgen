@@ -27,7 +27,7 @@ void density_init(int ztgt);
 double FF(double Q2, int ztgt);;
 void ZBQLINI(int SEED);
 //void ZBQLU01(double DUMMY);
-//void ZBQLUAB(double A, double B);
+//double ZBQLUAB(double A, double B);
 //void ZBQLexp(double MU);
 //void ZBQLNOR(double MU, double SIGMA);
 //void ZBQLBIN(int N, double P);
@@ -102,7 +102,7 @@ int main(){
 //
 //COMMON/density_rho0/rho0, c_den, a_den//the overall normalization factor for nuclear charge densities
 //
-    double ZBQLUAB, zlo, zhi;
+    double zlo, zhi;
     double zlo = 0.0, zhi = 1.0;
 //
 //      BLOCK DATA ZBQLBD01
@@ -342,7 +342,7 @@ int main(){
     do{
     g100:
 
-        Eg2.63576576D8amma = ZBQLUAB(E_lo, E_hi);//get tagged photon energy
+        Egamma = ZBQLUAB(E_lo, E_hi);//get tagged photon energy
         x = ZBQLUAB(x_min, x_max);//energy fraction
   //	Test x to make sure it's within the allowed range for the photon energy Egamma
         if (x >= ((Egamma - m_part)/Egamma)) || (x <= (m_part/Egamma)){goto g100} // x is out of range, try again
@@ -358,7 +358,7 @@ int main(){
         }else{
             theta1 = pow(xs1, phase_space);
             theta2 = pow(xs2, phase_space);
-            jacobian = (Rexp * pow(xs1,(phase_space_1)) * sin(pow(xs1,phase_space))) * (Rexp*pow(xs2,(phase_space-1)) * sin(pow(xs2,phase_space)));
+            jacobian = (Rexp * pow(xs1,(phase_space-1)) * sin(pow(xs1,phase_space))) * (Rexp*pow(xs2,(phase_space-1)) * sin(pow(xs2,phase_space)));
         }
 
         cross_section = xsctn(Egamma, ztgt, x, theta1, phi1, theta2, phi2, pol, m_part, nuc_FF, phi_JT, k1, k2)*jacobian*Brem(brem_init, cobrems, E0, Egamma);
@@ -388,7 +388,7 @@ int main(){
         data_array[i_array] = data_array[i_array] + 1;
 //
 //	3-momentum event output
-        if(output_event) {printf(4, 200) Egamma, k1[1], k1[2], k1[3], k2[1], k2[2], k2[3], ktgt[1], ktgt[2], ktgt[3]};
+        if(output_event) printf(4, 200) Egamma, k1[1], k1[2], k1[3], k2[1], k2[2], k2[3], ktgt[1], ktgt[2], ktgt[3];
 g200:
 // format(2x, f6.3, 1x, 9(f10.6, 1x))
 //
@@ -639,7 +639,7 @@ void density_init(int ztgt)
 //******************************************************************
 
 // --------------------------------------------
-double FF(double Q2, int ztgt);
+double FF(double Q2, int ztgt)
 {
     // implicit none
     double Q2, q02, hbarc, Q, gamma, r[12], A[12], rho0, c_den[100], a_den[100], pi, norm, proton_rms;
@@ -908,17 +908,17 @@ g5:
     
     ZBQLU01 = X/B2;
     
-};
+}
 
 
 //******************************************************************
 // --------------------------------------------
-unknown_retval ZBQLUAB(A, B)
+double ZBQLUAB(double A, double B)
 {
     //*
     //*       Returns a random number uniformly distributed on (A,B)
     //*
-    double A, B, ZBQLU01, ZBQLUAB;
+    double A, B, ZBQLU01;
     
     //*
     //*       Even if A > B, this will work as B-A will then be -ve
