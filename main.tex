@@ -1,0 +1,48 @@
+\documentclass{report}
+\usepackage[utf8]{inputenc}
+\usepackage{outlines}
+
+\title{BHevgen FORTRAN to C++ report}
+\author{Albert Fabrizi}
+\date{May 2020}
+
+\begin{document}
+
+\maketitle
+\chapter{Manual Changes}
+\section{FORTRAN without C++ counterparts}
+\begin{outline}
+    \1 FORTRAN functions have result set equal to the declaration term this is not caught by the translator
+        \2Fixed by setting return to a new variable
+        \2Functions that needed repair:
+            \3Brem
+            \3xcstn
+    \1 Arrays start at 1 in FORTRAN this was not corrected by translator
+        \2Fixed by manually setting arrays to one position lower
+    \1 Certain math functions don't translate properly and have to be rewritten. Examples:
+        \2dacos - acos
+        \2dlog - log
+        \2datan - atan
+        \2dsqrt - sqrt
+        \2Dcos - cos
+        \2Dsin - sin
+    \1 Small issues
+        \2 A lot of lines needed ";" appended at the end
+        \2 Some comments needed restructuring
+        \2 Fortran is not case sensitive
+        \2 No save statement in C++
+        \2 Numbers have "D6, D7, D8" at the end
+        \2 .not. turns to !
+\end{outline}
+\chapter{Issues}
+\section{FORTRAN Issues}
+The following issues have to be resolved in order to make the program work in C++
+\begin{itemize}
+    \item printf functionality, specifically unit number
+    \item fopen declaration
+    \item snaf functionality
+    \item Function "analysis" has type declaration issues
+    
+\end{itemize}
+
+\end{document}
