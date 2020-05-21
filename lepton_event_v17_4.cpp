@@ -288,7 +288,7 @@ int main(){
         }
     }while(i < itest[j]);
     std::cout << "test events " << itest[j] <<  " maximum xsctn*Brem " <<  cross_max << "\n";
-    std::cout << "Egamma max " << Egamma_max << " x max " << xmax << " theta1 max " << theta1_max << " theta2 max " << theta2_max << " phi1 max " << phi1_max << " phi2 max " <<  phi2_max + "\n";
+    std::cout << "Egamma max " << Egamma_max << " x max " << xmax << " theta1 max " << theta1_max << " theta2 max " << theta2_max << " phi1 max " << phi1_max << " phi2 max " <<  phi2_max << "\n";
     j++;
     }while(j < 4);
 //
@@ -967,7 +967,7 @@ double ZBQLNOR(double MU, double SIGMA)
     //*       MU and standard deviation |SIGMA|, using the Box-Muller
     //*       algorithm
     //*
-    double THETA, R, PI;
+    double THETA, R, PI, outputZBQLNOR;
     double SPARE;
     int STATUS;
     //SAVE STATUS, SPARE, PI;
@@ -979,16 +979,16 @@ double ZBQLNOR(double MU, double SIGMA)
     {
         THETA = 2.0 * PI * ZBQLU01(0.0);
         R = sqrt(-2.0*log(ZBQLU01(0.0)));
-        ZBQLNOR = (R * cos(THETA));
+        outputZBQLNOR = (R * cos(THETA));
         SPARE = (R* sin(THETA));
         STATUS = 1;
     } else
     {
-        ZBQLNOR = SPARE;
+        outputZBQLNOR = SPARE;
         STATUS = 0;
     }
     
-    ZBQLNOR = MU + (SIGMA*ZBQLNOR);
+    outputZBQLNOR = MU + (SIGMA * outputZBQLNOR);
     
 };
 
@@ -1000,20 +1000,19 @@ double ZBQLBIN(int N, double P)
     //*
     //*       Returns a random number binomially distributed (N,P)
     //*
-    double P, ZBQLBET1;
-    double PP, PPP, G, Y, TINY;
-    int N, ZBQLGEO, IZ, NN;
+    double outputZBQLBIN, PP, PPP, G, Y, TINY;
+    int N, IZ, NN;
     
     TINY = 1.0;
-    ZBQLBIN = 0;
+    outputZBQLBIN = 0;
     
     if (!((P >= 0.0)) && ((P <= 1.0))) 
     {
-        printf(*, 1)  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLBIN", /);
+        printf(*, 1);  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLBIN", /);
         return;
     } else
     {if (N <= 0) THEN
-        printf(*, 1)  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLBIN", /);
+        printf(*, 1);  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLBIN", /);
         return;
     }
     //*
@@ -1038,10 +1037,10 @@ g10:
     IZ = int(double(NN) * PP) + 1;
     if(((IZ > 10)) and ((IZ < NN - 10))) 
     {
-        Y = ZBQLBET1(double(IZ), DBLE(NN - IZ + 1));
+        Y = ZBQLBET1(double(IZ), double(NN - IZ + 1));
         if (Y < PP) 
         {
-            ZBQLBIN = ZBQLBIN + IZ;
+            outputZBQLBIN = outputZBQLBIN + IZ;
             NN = NN - IZ;
             PP = (PP - Y)/(1.0 - Y);
         } else
@@ -1083,7 +1082,7 @@ g30:
     }
     
     if (PP > 0.5) IZ = NN - IZ;
-    ZBQLBIN = ZBQLBIN + IZ;
+    outputZBQLBIN = outputZBQLBIN + IZ;
     
     
 };
@@ -1099,21 +1098,21 @@ int ZBQLGEO(double P)
     //* 
     
     double U, TINY;
-    int ZBQLGEO;
+    int outputZBQLGEO;
     
     TINY = 1.0;
-    ZBQLGEO = 0;
+    outputZBQLGEO = 0;
     
-    if (!((P >= 0.0D0)) && ((P <= 1.0D0))) 
+    if (!((P >= 0.0)) && ((P <= 1.0))) 
     {
-        printf(*, 1)  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLGEO", /);
+        printf(*, 1);  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLGEO", /);
         return;
     }
     
     if (P > 0.9) 
     {
 g10:
-        ZBQLGEO = ZBQLGEO + 1;
+        outputZBQLGEO = outputZBQLGEO + 1;
         U = ZBQLU01(0.0);
         if (U > P) goto g10;
     } else
@@ -1125,10 +1124,10 @@ g10:
         //*
         if (P > TINY) 
         {
-            ZBQLGEO = 1 + int(log(U)/log(1.0 - P));
+            outputZBQLGEO = 1 + int(log(U)/log(1.0 - P));
         } else
         {
-            ZBQLGEO = 1 + int(-log(U)/P);
+            outputZBQLGEO = 1 + int(-log(U)/P);
         }
     }
     
@@ -1144,7 +1143,7 @@ double ZBQLPOI(double MU)
     //*       Returns a random number Poisson distributed with mean MU
     //*
     
-    double X, Y, PI;
+    double X, Y, PI, outputZBQLPOI;
     double MU1, TMP1, TMP2, T;
     int K, INIT;
     //SAVE INIT, PI;
@@ -1156,11 +1155,11 @@ double ZBQLPOI(double MU)
         INIT = 1;
     }
     
-    ZBQLPOI = 0;
+    outputZBQLPOI = 0;
     
     if (MU < 0.0) 
     {
-        printf(*, 1)  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLPOI", /);
+        printf(*, 1);  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLPOI", /);
         return;
     }
     //*
@@ -1186,20 +1185,20 @@ g19:
             Y = ZBQLGAM(double(K), MU1);
             if (Y > 1.0) 
             {
-                ZBQLPOI = ZBQLPOI + ZBQLBIN(K - 1, (1.0/Y));
+                outputZBQLPOI = outputZBQLPOI + ZBQLBIN(K - 1, (1.0/Y));
                 return;
             }
-            ZBQLPOI = ZBQLPOI + K;
-            MU1 = MU1*(1.0D0 - Y);
+            outputZBQLPOI = outputZBQLPOI + K;
+            MU1 = MU1*(1.0 - Y);
             goto g19;
         }
         Y = exp(-MU1);
         X = 1.0;
 g20:
-        X = X*ZBQLU01(0.0);
-        if (X > Y) 
+        X = X * ZBQLU01(0.0);
+        if(X > Y) 
         {
-            ZBQLPOI = ZBQLPOI + 1;
+            outputZBQLPOI = outputZBQLPOI + 1;
             goto g20;
         }
         //*
@@ -1212,10 +1211,10 @@ g20:
         TMP1 = sqrt(2.0*MU);
         TMP2 = ZBQLLG(MU + 1.0) - (MU*log(MU));
 g30:
-        Y = tan(PI*ZBQLU01(0.0D0));
-        ZBQLPOI = int(MU + (TMP1*Y));
+        Y = tan(PI*ZBQLU01(0.0));
+        outputZBQLPOI = int(MU + (TMP1*Y));
         if (ZBQLPOI < 0) goto g30;
-        X = double(ZBQLPOI);
+        X = double(outputZBQLPOI);
         T = (X * log(MU) - ZBQLLG(X + 1.0)) + TMP2;
         if (abs(T) < 1.0) 
         {
@@ -1241,15 +1240,15 @@ double ZBQLGAM(double G, double H)
     //*       G/H and variance G/(H^2). (ie. shape parameter G & scale
     //*       parameter H)
     //*
-    double C, D, R, A, z1, z2, B1, B2, M;
+    double C, D, R, A, z1, z2, B1, B2, M, outputZBQLGAM;
     double U1, U2, U, V, TEST, X;
     double c1, c2, c3, c4, c5, w;
     
-    ZBQLGAM = 0.0;
+    outputZBQLGAM = 0.0;
     
     if(((G <= 0.0)) || ((H < 0.0))) 
     {
-        printf(*, 1)  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLGAM", /5X, "(both parameters must be positive)", /);
+        printf(*, 1);  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLGAM", /5X, "(both parameters must be positive)", /);
         return;
     }
     
@@ -1259,8 +1258,8 @@ g889:
         U = ZBQLU01(0.0);
         V = ZBQLU01(0.0);
         if (U > exp(1.0)/(G + exp(1.0))) goto g891;
-        ZBQLGAM = ((g + exp(1.0))*U/exp(1.0))**(1.0/G);
-        if (V > exp(-ZBQLGAM)) 
+        outputZBQLGAM = pow(((g + exp(1.0))*U/exp(1.0)),(1.0/G));
+        if (V > exp(-outputZBQLGAM)) 
         {
             goto g889;
         } else
@@ -1268,10 +1267,10 @@ g889:
             goto g892;
         }
 g891:
-        ZBQLGAM = -log((g + exp(1.0))*(1.0 - U)/(g*exp(1.0)));
-        if (V > ZBQLGAM**(g - 1.0)) goto g889;
+        outputZBQLGAM = -log((g + exp(1.0)) * (1.0 - U)/(g*exp(1.0)));
+        if (V > pow(outputZBQLGAM,(g - 1.0))) goto g889;
 g892:
-        ZBQLGAM = ZBQLGAM/H;
+        outputZBQLGAM = outputZBQLGAM/H;
         return;
     }else if (G < 2.0){
         M = 0.0;
@@ -1293,7 +1292,7 @@ g777:
         if (c3 * U + w + 1.0/w <= c4) goto g778;
         if (c3 * log(U) - log(w) + w >= 1.0) goto g777;
 g778:
-        ZBQLGAM = c1*w/H;
+        outputZBQLGAM = c1*w/H;
         return;
     }else{
         M = -(G - 2.0);
@@ -1321,7 +1320,7 @@ g50:
     TEST = (pow((X - M), ((G - 1)/(R + 1)))) * exp(-(X - M)/(R + 1.0));
     if (U <= TEST) 
     {
-        ZBQLGAM = (X - M)/H;
+        outputZBQLGAM = (X - M)/H;
     } else
     {
         goto g50;
