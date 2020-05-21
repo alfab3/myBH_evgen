@@ -1457,61 +1457,58 @@ double ZBQLPAR(A, B)
 
 //***************************************************************
 // --------------------------------------------
-unknown_retval ZBQLLG(X)
+double ZBQLLG(double X)
 {
     //*
     //*     Returns log(G(X)) where G is the Gamma function. The algorithm is
     //*     that given in Press et al (1992), Section 6.1, although this
     //*     version also allows for arguments less than 1.
     //*
-    double X, Z, Z2, ZBQLLG, PI, RLN2P, C(0:6), TMP, SUM;
+    double Z, Z2, PI, RLN2P, C[6], TMP, SUM;
     int INIT, I;
-    SAVE INIT, C, RLN2P, PI;
-    DATA INIT/0/;
+    //SAVE INIT, C, RLN2P, PI;
+    INIT = 0;
     DATA(C(I), I = 0, 6)/1.000000000190015D0, 76.18009172947146D0,       -86.50532032941677D0, 24.01409824083091D0,             -1.231739572450155D0, 0.1208650973866179D - 2,             -0.5395239384953D - 5/;
     
-    if (INIT == 0) 
-    {
-        PI = 4.0D0*DATAN(1.0D0);
-        RLN2P = 0.5D0*DLOG(2.0D0*PI);
+    if (INIT == 0){
+        PI = 4.0 * atan(1.0);
+        RLN2P = 0.5 * log(2.0 * PI);
         INIT = 1;
     }
     //*
     //*     Compute for x > 1, then use transformation if necessary. Z is
     //*     our working argument.
     //*
-    if (X >= 1.0D0) 
-    {
+    if (X >= 1.0){
         Z = X;
-    } else
-    {
-        Z = 2.0D0 - X;
-        Z2 = 1.0D0 - X;
+    }else{
+        Z = 2.0 - X;
+        Z2 = 1.0 - X;
     }
     
-    if (DABS(Z - 1.0D0) < 1.0D - 12) 
+    if (abs(Z - 1.0) < 1.0) 
     {
-        ZBQLLG = 0.0D0;
+        ZBQLLG = 0.0;
         return;
     }
     
-    TMP = Z + 4.5D0;
-    TMP = ((Z - 0.5D0)*DLOG(TMP)) - TMP + RLN2P;
+    TMP = Z + 4.5;
+    TMP = ((Z - 0.5) * log(TMP)) - TMP + RLN2P;
     
-    SUM = C(0);
+    SUM = C[0];
     for(I=1; I<=6; I++)
     {
-        SUM = SUM + (C(I)/(Z + DBLE(I - 1)));
+        SUM = SUM + (C(I)/(Z + double(I - 1)));
         
     }
-    ZBQLLG = TMP + DLOG(SUM);
+    ZBQLLG = TMP + log(SUM);
     //*
     //*     Transformation required if X<1
     //*
-    if (X < 1.0D0) 
+    if (X < 1.0) 
     {
         TMP = PI*Z2;
-        ZBQLLG = DLOG(TMP/Dsin(TMP)) - ZBQLLG;
+        ZBQLLG = log(TMP/sin(TMP)) - ZBQLLG;
     }
     
 };
