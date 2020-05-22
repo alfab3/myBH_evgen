@@ -22,9 +22,9 @@ struct Brem_spect brem_spect;
 double Brem(bool brem_init, bool cobrems, double E0, double Egamma);
 double xsctn(double E0, int ztgt, double x, double theta1, double phi1, double theta2, double phi2, double pol, double m_part, bool nuc_FF, double phi_JT, double k1[3], double k2[3]);//units of nb/sr^2
 double FF2(double q2, int ztgt, bool nuc_FF);
-void analysis(double E0, double mtgt, double k1[3], double k2[3], double ktgt[3], double w_mumu, double t, double missing_mass, double m_part, bool pion_hypothesis);
+//void analysis(double E0, double mtgt, double k1[3], double k2[3], double ktgt[3], double w_mumu, double t, double missing_mass, double m_part, bool pion_hypothesis);
 void density_init(int ztgt);
-double FF(double Q2, int ztgt);;
+double FF(double Q2, int ztgt);
 void ZBQLINI(int SEED);
 //void ZBQLU01(double DUMMY);
 //double ZBQLUAB(double A, double B);
@@ -304,7 +304,7 @@ int main(){
 //cross section at the coherent peak converges
     cross_sum = 0;
     do{
-        x = x_min + (x_max - x_min)*ZBQLUAB(zlo, zhi);//energy fraction
+        x = x_min + (x_max - x_min) * ZBQLUAB(zlo, zhi);//energy fraction
         phi1 = 2*pi*ZBQLUAB(zlo, zhi);
         phi2 = 2*pi*ZBQLUAB(zlo, zhi);
         xs1 = ZBQLUAB(xs_min, xs_max);
@@ -321,7 +321,7 @@ int main(){
         cross_section = xsctn(E_coherent, ztgt, x, theta1, phi1, theta2, phi2, pol, m_part, nuc_FF, phi_JT, k1, k2)*jacobian;
         cross_sum = cross_sum + cross_section;
         i++;
-    }while(0 < itest(j));
+    }while(0 < itest[j]);
     total_xscn = cross_sum/float(itest[j])*pow((xs_max - xs_min), 2)*pow((2*pi), 2) * (x_max - x_min);
     std::cout << "test events " << itest[j] << " Egamma " <<  E_coherent << " total cross section nb " <<  total_xscn << "\n";
     j++;
@@ -345,9 +345,9 @@ int main(){
         Egamma = ZBQLUAB(E_lo, E_hi);//get tagged photon energy
         x = ZBQLUAB(x_min, x_max);//energy fraction
   //	Test x to make sure it's within the allowed range for the photon energy Egamma
-        if (x >= ((Egamma - m_part)/Egamma)) || (x <= (m_part/Egamma)){goto g100} // x is out of range, try again
-        phi1 = 2.*pi*ZBQLUAB(zlo, zhi);
-        phi2 = 2.*pi*ZBQLUAB(zlo, zhi);
+        if((x >= ((Egamma - m_part)/Egamma)) || (x <= (m_part/Egamma))) goto g100; // x is out of range, try again
+        phi1 = 2 * pi*ZBQLUAB(zlo, zhi);
+        phi2 = 2 * pi*ZBQLUAB(zlo, zhi);
         xs1 = ZBQLUAB(xs_min, xs_max);
         xs2 = ZBQLUAB(xs_min, xs_max);
 //
@@ -366,7 +366,7 @@ int main(){
             bad_max = bad_max + 1;//an occurrence of cross section larger than cross_max, not supposed to happen
             std::cout <<  "bad max cross section= " <<  cross_section << "\n";
         }
-        cross_test = cross_max*ZBQLUAB(zlo, zhi);
+        cross_test = cross_max * ZBQLUAB(zlo, zhi);
         if (cross_test > cross_section){//selection fails
             nfail = nfail + 1;
             goto g100;
@@ -377,12 +377,12 @@ int main(){
 //							
 //		Do the histogramming
 //
-        if(hist_w) i_array = nint((w_mumu - 0.200)/delta_w);//w distribution;
-        if(hist_x) i_array = nint(x/delta_x);//x distribution
-        if(hist_t) i_array = nint(t/delta_t);//t distribution;
-        if(hist_phi_JT) i_array = nint(phi_JT*180/pi/delta_phi); //JT phi distribution in degrees;
-        if(hist_log_t) i_array = nint((log10(t) + 6)/delta_log_t);// 10^ - 6 GeV^2 is bin 0;
-        if(hist_Egamma) i_array = nint(Egamma/delta_Egamma);//photon energy distribution;
+        if(hist_w) i_array = int((w_mumu - 0.200)/delta_w);//w distribution;
+        if(hist_x) i_array = int(x/delta_x);//x distribution
+        if(hist_t) i_array = int(t/delta_t);//t distribution;
+        if(hist_phi_JT) i_array = int(phi_JT*180/pi/delta_phi); //JT phi distribution in degrees;
+        if(hist_log_t) i_array = int((log10(t) + 6)/delta_log_t);// 10^ - 6 GeV^2 is bin 0;
+        if(hist_Egamma) i_array = int(Egamma/delta_Egamma);//photon energy distribution;
         if(i_array < 0) i_array = 0;
         if (i_array > 200) i_array = 200;
         data_array[i_array] = data_array[i_array] + 1;
@@ -409,7 +409,7 @@ g200:
         error_array[i] = sqrt(data_array[i]);
         printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
         }else if (hist_x){
-            x_value = float(i)*delta_x;
+            x_value = float(i) * delta_x;
             error_array[i] = sqrt(data_array[i]);
             printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
         }else if(hist_t){
@@ -479,7 +479,7 @@ g20:
     //
     if (cobrems) 
     { //return coherent brems distribution
-        ipoint = nint((Egamma + .02)/.04);
+        ipoint = int((Egamma + .02)/.04);
         bremOut = brem_spect.Br[ipoint];
         return bremOut;
     }
@@ -533,7 +533,7 @@ double xsctn(double E0, int ztgt, double x, double theta1, double phi1, double t
 
 
     phi_JT = acos(JT[1]/sqrt(pow(JT[1],2) + pow(JT[2], 2)));//phi angle of JT wrt to x axis, radians
-    if (JT[2] < 0){phi_JT = 2.*pi - phi_JT};
+    if (JT[2] < 0) phi_JT = 2*pi - phi_JT;
 //
     W_unpol = pow(m_part,2) * pow(JS,2) + (pow(x,2) + pow((1 -x),2)) * (pow(JT[1],2) + pow(JT[2], 2));
 //     	W_pol = -2.*x*(1.-x)*((p2/c2)**2*cos(2.*phi2)+(p1/c1)**2*cos(2.*phi1)+2.*(p2/c2)*(p1/c1)*cos(phi1+phi2)) !the Bakmaev expression
@@ -553,11 +553,16 @@ double xsctn(double E0, int ztgt, double x, double theta1, double phi1, double t
 // --------------------------------------------
 double FF2(double q2, int ztgt, bool nuc_FF)
 {
-    double hbarc, z, FF_nuc, FF_TFM, alpha[3], b[3], b0, m_e, c, FF;
+    double hbarc, z, FF_nuc, FF_TFM, alpha[3], b[3], b0, m_e, c, outputFF2;
     int i;
     //bool nuc_FF;
     double m_e = 0.511e-3, hbarc = 0.197;
-    double alpha[1] = 0.1, alpha[2] = 0.55, alpha[3] = 0.35, b[1] = 6.0, b[2] = 1.2, b[3] = 0.3;
+    alpha[0] = 0.1; 
+    alpha[1] = 0.55; 
+    alpha[2] = 0.35;
+    b[0] = 6.0; 
+    b[1] = 1.2; 
+    b[2] = 0.3;
     z = float(ztgt);
     c = m_e*pow(z,0.333);
     FF_nuc = FF(q2, ztgt);
@@ -566,33 +571,30 @@ double FF2(double q2, int ztgt, bool nuc_FF)
     do{
       FF_TFM = FF_TFM - alpha[i]*q2/(q2 + pow((b[i]*c),2));
       i++;
-    }while{i < 3);
-    if(nuc_FF) 
-      {
-	FF2 = pow((FF_nuc - FF_TFM),2);
-      }else
-      {
-	FF2 = 1;
-      }
-    return;
+    }while(i < 3);
+    if(nuc_FF){
+	    outputFF2 = pow((FF_nuc - FF_TFM),2);
+    }else{
+	    outputFF2 = 1;
+    }
+    return outputFF2;
 }
 //
 //****************************************************************************************
 //
 // --------------------------------------------
-double analysis(double E0, double mtgt, double k1, double k2, double ktgt, double w_mumu, double t, double missing_mass, double m_part, bool pion_hypothesis)
+double analysis(double E0, double mtgt, double k1[3], double k2[3], double ktgt[3], double w_mumu, double t, double missing_mass, double m_part, bool pion_hypothesis)
 {
     // implicit none
-    bool pion_hypothesis;
-    double E1, E2, k1[3], k2[3], w_mumu, t, m_part, ktgt[3];
+    double E1, E2, ks[3], w_mumu, t, m_x;
     double m_pi = 0.139570;
     pi = acos(-1);
     E1 = sqrt(pow(k1[0], 2) + pow(k1[1], 2) + pow(k1[2], 2) + pow(m_part, 2));//lepton energies
     E2 = sqrt(pow(k2[0], 2) + pow(k2[1], 2) + pow(k2[2], 2) + pow(m_part, 2));
-    ks[0] = k1[0] + k2[0]//lepton summed momentum;
+    ks[0] = k1[0] + k2[0];//lepton summed momentum
     ks[1] = k1[1] + k2[1];
     ks[2] = k1[2] + k2[2];
-    ktgt[0] = -ks[0]//target momentum;
+    ktgt[0] = -ks[0];//target momentum;
     ktgt[1] = -ks[1];
     ktgt[2] = E0 - ks[2];
     missing_mass = sqrt(pow((E0 + mtgt - E1 - E2), 2) - pow(ktgt[0], 2) - pow(ktgt[1],2) - pow(ktgt[2], 2));
@@ -605,7 +607,7 @@ double analysis(double E0, double mtgt, double k1, double k2, double ktgt, doubl
     E2 = sqrt(pow(k2[0], 2) + pow(k2[1], 2) + pow(k2[2], 2) + pow(m_x, 2));
     w_mumu = sqrt(pow(E1 + E2, 2) - pow(ks[0], 2) - pow(ks[1], 2) - pow(ks[2],2));
     return;
-};
+}
 
 
 
@@ -676,7 +678,7 @@ double FF(double Q2, int ztgt)
     }else if(ztgt == 82){//lead
         returnFF = 0;
 	    do{
-	    returnFF = FF + A[i] * (pow(gamma,2) * cos(Q * r[i]/hbarc) + 2 * r[i] * hbarc/Q * sin(Q * r[i]/hbarc))/(pow(gamma, 2) + 2 * pow(r[i], 2)) * exp(-Q2/4 * pow(gamma, 2)/pow(hbarc, 2));
+	    returnFF = returnFF + A[i] * (pow(gamma,2) * cos(Q * r[i]/hbarc) + 2 * r[i] * hbarc/Q * sin(Q * r[i]/hbarc))/(pow(gamma, 2) + 2 * pow(r[i], 2)) * exp(-Q2/4 * pow(gamma, 2)/pow(hbarc, 2));
 	    i++;
         }while(i < 12);
     }else{ //for everything else use 2 - parameter fermi model, reference ?
@@ -1011,7 +1013,7 @@ double ZBQLBIN(int N, double P)
         printf(*, 1);  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLBIN", /);
         return;
     } else
-    {if (N <= 0) THEN
+    {if (N <= 0){}
         printf(*, 1);  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLBIN", /);
         return;
     }
@@ -1258,7 +1260,7 @@ g889:
         U = ZBQLU01(0.0);
         V = ZBQLU01(0.0);
         if (U > exp(1.0)/(G + exp(1.0))) goto g891;
-        outputZBQLGAM = pow(((g + exp(1.0))*U/exp(1.0)),(1.0/G));
+        outputZBQLGAM = pow(((G + exp(1.0))*U/exp(1.0)),(1.0/G));
         if (V > exp(-outputZBQLGAM)) 
         {
             goto g889;
@@ -1267,7 +1269,7 @@ g889:
             goto g892;
         }
 g891:
-        outputZBQLGAM = -log((g + exp(1.0)) * (1.0 - U)/(g*exp(1.0)));
+        outputZBQLGAM = -log((G + exp(1.0)) * (1.0 - U)/(g*exp(1.0)));
         if (V > pow(outputZBQLGAM,(g - 1.0))) goto g889;
 g892:
         outputZBQLGAM = outputZBQLGAM/H;
@@ -1338,13 +1340,13 @@ double ZBQLBET1(double NU1, double NU2)
     //*       Returns a random number, beta distributed with degrees
     //*       of freedom NU1 and NU2.
     //*
-    double X1, X2;
+    double X1, X2, outputZBQLBET1;
     
-    ZBQLBET1 = 0.0;
+    outputZBQLBET1 = 0.0;
     
     if(((NU1 <= 0.0)) || ((NU2 <= 0.0))) 
     {
-        printf(*, 1)  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLBET1", /5X, "(both degrees of freedom must be positive)", /);
+        printf(*, 1);  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLBET1", /5X, "(both degrees of freedom must be positive)", /);
         return;
     }
     //*      
@@ -1360,12 +1362,12 @@ g10:
         X2 = ZBQLU01(0.0);
         if (pow(X1,(1.0/NU1)) + pow(X2, (1.0/NU2)) > 1.0) goto g10;
         X1 = (log(X2)/NU2) - (log(X1)/NU1);
-        ZBQLBET1 = pow((1.0 + exp(X1)), (-1));
-        if(ZBQLBET1 > 1.0) goto g10;
+        outputZBQLBET1 = pow((1.0 + exp(X1)), (-1));
+        if(outputZBQLBET1 > 1.0) goto g10;
     }else{
         X1 = ZBQLGAM(NU1, 1.0);
         X2 = ZBQLGAM(NU2, 1.0);
-        ZBQLBET1 = X1/(X1 + X2);
+        outputZBQLBET1 = X1/(X1 + X2);
     }
     return;
 }
@@ -1380,18 +1382,18 @@ double ZBQLWEI(double A, double B)
     //*       A and location parameter B, i.e. density is
     //*	f(x) = ( A/(B**A) ) * x**(A-1) * EXP( -(x/B)**A )
     //*
-    double U;
+    double U, outputZBQLWEI;
     
-    ZBQLWEI = 0.0;
+    outputZBQLWEI = 0.0;
     
     if(((A <= 0.0)) || ((B <= 0.0))) 
     {
-        printf(*, 1)  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLWEI", /5X, "(both parameters must be positive)", /);
+        printf(*, 1);  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLWEI", /5X, "(both parameters must be positive)", /);
         return;
     }
     
     U = ZBQLU01(0.0);
-    ZBQLWEI = B*(pow((-log(U)),(1.0/A)));
+    outputZBQLWEI = B*(pow((-log(U)),(1.0/A)));
     
     
 };
@@ -1408,19 +1410,19 @@ int ZBQLNB(double R, double P)
     //*       form of the distribution is *not* the no. of trials to 
     //*       the Rth success - see documentation for full spec.
     //*
-    double Y;
+    double Y, outputZBQLNB;
     
-    ZBQLNB = 0;
+    outputZBQLNB = 0;
     
     if(((R <= 0.0)) || ((P <= 0.0)) || ((P >= 1.0))) 
     {
-        printf(*, 1)  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLNB");
+        printf(*, 1);  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLNB");
         return;
     }
     
     Y = ZBQLGAM(R, 1.0);
     Y = Y*P/(1.0 - P);
-    ZBQLNB = ZBQLPOI(Y);
+    outputZBQLNB = ZBQLPOI(Y);
     
     
 };
@@ -1428,7 +1430,7 @@ int ZBQLNB(double R, double P)
 
 //***************************************************************
 // --------------------------------------------
-double ZBQLPAR(A, B)
+double ZBQLPAR(double A, double B)
 {
     //*
     //*     Returns a random number, Pareto distributed with parameters
@@ -1437,18 +1439,18 @@ double ZBQLPAR(A, B)
     //*     randgen.txt). The algorithm is straightforward - it uses the
     //*     inverse CDF method.
     //*
-    double A, B, ZBQLPAR, ZBQLU01, U;
+    double U, outputZBQLPAR;
     
-    ZBQLPAR = 0.0D0;
+    outputZBQLPAR = 0.0;
     
-    if ((A <= 0.0D0)) || ((B <= 0.0D0)) 
+    if(((A <= 0.0)) || ((B <= 0.0)))
     {
-        printf(*, 1)  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLPAR", /5X, "(both parameters must be positive)", /);
+        printf(*, 1);  // format(/5X, "****ERROR**** Illegal parameter value in ", " ZBQLPAR", /5X, "(both parameters must be positive)", /);
         return;
     }
     
-    U = ZBQLU01(0.0D0);
-    ZBQLPAR = B*(U**(-1.0D0/A) - 1.0D0);
+    U = ZBQLU01(0.0);
+    outputZBQLPAR = B*(pow(U, (-1.0/A)) - 1.0);
     
     
 };
@@ -1463,11 +1465,17 @@ double ZBQLLG(double X)
     //*     that given in Press et al (1992), Section 6.1, although this
     //*     version also allows for arguments less than 1.
     //*
-    double Z, Z2, PI, RLN2P, C[6], TMP, SUM;
+    double outputZBQLLG, Z, Z2, PI, RLN2P, C[6], TMP, SUM;
     int INIT, I;
     //SAVE INIT, C, RLN2P, PI;
     INIT = 0;
-    DATA(C(I), I = 0, 6)/1.000000000190015D0, 76.18009172947146D0,       -86.50532032941677D0, 24.01409824083091D0,             -1.231739572450155D0, 0.1208650973866179D - 2,             -0.5395239384953D - 5/;
+    C[0] = 1.000000000190015; 
+    C[1] = 76.18009172947146;
+    C[2] = -86.50532032941677; 
+    C[3] = 24.01409824083091;
+    C[4] = -1.231739572450155;
+    C[5] = 0.1208650973866179;
+    C[6] = -0.5395239384953;
     
     if (INIT == 0){
         PI = 4.0 * atan(1.0);
@@ -1487,7 +1495,7 @@ double ZBQLLG(double X)
     
     if (abs(Z - 1.0) < 1.0) 
     {
-        ZBQLLG = 0.0;
+        outputZBQLLG = 0.0;
         return;
     }
     
@@ -1497,17 +1505,17 @@ double ZBQLLG(double X)
     SUM = C[0];
     for(I=1; I<=6; I++)
     {
-        SUM = SUM + (C(I)/(Z + double(I - 1)));
+        SUM = SUM + (C[I]/(Z + double(I - 1)));
         
     }
-    ZBQLLG = TMP + log(SUM);
+    outputZBQLLG = TMP + log(SUM);
     //*
     //*     Transformation required if X<1
     //*
-    if (X < 1.0) 
+    if (X < 1.0)
     {
         TMP = PI*Z2;
-        ZBQLLG = log(TMP/sin(TMP)) - ZBQLLG;
+        outputZBQLLG = log(TMP/sin(TMP)) - outputZBQLLG;
     }
     
 };
