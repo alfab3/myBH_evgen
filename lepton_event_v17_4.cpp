@@ -225,11 +225,15 @@ int main(){
         density_init(ztgt); //for initializing the nuclear form factor(density_rho0.rho0 is density const.);
     }
 //  
+/*
     if((hist_w) || (hist_x) || (hist_t) || (hist_phi_JT) || (hist_log_t) || (hist_Egamma)){
         std::ofstream histFile;
         histFile.open("lepton_v17_4_hist.txt");
     }
-    //if (output_event){}
+    if (output_event){
+        std::ofstream outFile;
+        outFile.open("lepton_v17_4_event.txt");
+    }/**/
 //
 //	End logical assignments
 //
@@ -339,10 +343,10 @@ int main(){
 //Use the widest possible range in x by using the maximum accepted tagged photon energy, then test it
     x_max = (E_hi - m_part)/E_hi;//largest possible x
     x_min = m_part/E_hi;//smallest possible x
-//
+    //
     nfail = 0;
     bad_max = 0;
-//
+    //
     do{
     g100:
 
@@ -354,7 +358,6 @@ int main(){
         phi2 = 2 * pi*ZBQLUAB(zlo, zhi);
         xs1 = ZBQLUAB(xs_min, xs_max);
         xs2 = ZBQLUAB(xs_min, xs_max);
-//
         if(phase_space == 0){// dcos theta/dx = 1
             theta1 = acos(xs1);
             theta2 = acos(xs2);
@@ -413,31 +416,49 @@ g200:
     int i = 0;
     do{//printf out the arrays
         if(hist_w){
-        x_value = float(i) * delta_w + 0.200;
-        error_array[i] = sqrt(data_array[i]);
-        printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
+            std::ofstream histFile;
+            histFile.open("lepton_v17_4_hist.txt");
+            x_value = float(i) * delta_w + 0.200;
+            error_array[i] = sqrt(data_array[i]);
+            histFile << x_value << " " << data_array[i] << " " << error_array[i] << "\n";
+            histFile.close();
         }else if (hist_x){
+            std::ofstream histFile;
+            histFile.open("lepton_v17_4_hist.txt");
             x_value = float(i) * delta_x;
             error_array[i] = sqrt(data_array[i]);
-            printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
+            histFile << x_value << " " << data_array[i] << " " << error_array[i] << "\n";
+            histFile.close();
         }else if(hist_t){
+            std::ofstream histFile;
+            histFile.open("lepton_v17_4_hist.txt");
             x_value = float(i)*delta_t;
             error_array[i] = sqrt(data_array[i]);
-            printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
+            histFile << x_value << " " << data_array[i] << " " << error_array[i] << "\n";
+            histFile.close();
         }else if(hist_phi_JT){
+            std::ofstream histFile;
+            histFile.open("lepton_v17_4_hist.txt");
             x_value = float(i)*delta_phi;
             if((x_value == 0.) || (x_value == 360.)) data_array[i] = 2.*data_array[i]; // this is a binning problem
             error_array[i] = sqrt(data_array[i]);
-            printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
+            histFile << x_value << " " << data_array[i] << " " << error_array[i] << "\n";
+            histFile.close();
         }else if(hist_log_t){
+            std::ofstream histFile;
+            histFile.open("lepton_v17_4_hist.txt");
             x_value = pow(10, (float(i) * delta_log_t-6));
             error_array[i] = sqrt(data_array[i])/(pow(10,(float(i+1)*delta_log_t-6)) - pow(10,(float(i-1) * delta_log_t - 6))) * 2;
             data_array[i] = data_array[i]/(pow(10,(float(i+1) * delta_log_t-6)) - pow(10,(float(i-1) * delta_log_t - 6))) * 2;
-            printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
+            histFile << x_value << " " << data_array[i] << " " << error_array[i] << "\n";
+            histFile.close();
         }else if(hist_Egamma){
+            std::ofstream histFile;
+            histFile.open("lepton_v17_4_hist.txt");
             x_value = float(i)*delta_Egamma;
             error_array[i] = sqrt(data_array[i]);
-            printf(2, 20) x_value, data_array[i], error_array[i];  // format(2x, e10.4, 2x, e10.4, 2x, e10.4)
+            histFile << x_value << " " << data_array[i] << " " << error_array[i] << "\n";
+            histFile.close();
         }
     }while(i < 200);
 
@@ -445,7 +466,7 @@ g200:
 //
 
 //
-exit(0);
+//exit(0);
 };
 
 
@@ -458,23 +479,24 @@ double Brem(bool brem_init, bool cobrems, double E0, double Egamma){
     int i, imax, ipoint;
     double bremOut;
     bool brem_init, cobrems;
+    FILE *CBD;
     //COMMON/Brem_spect/Eg, Br
     //	
     //Brem = 0;
     //
     if (brem_init){//fopen and scanf coherent Brem file
-      fopen(unit = 2, file = "CobremsDistribution.dat");
-      i = 1;
+        CBD = fopen("CobremsDistribution.dat", "r");
+        i = 1;
 g10:
         
-      scanf(2, *, end = 20) brem_spect.Eg[i], brem_spect.Br[i];
+      fscanf(CBD,"%d %d", brem_spect.Eg[i], brem_spect.Br[i]);
         //		print *, Eg(i), Br(i)
       i = i + 1;
       goto g10;
 g20:
         
       imax = i - 1;
-      close(2);
+      fclose(CBD);
       brem_init = false;//done with initialization;
       return;
     }
