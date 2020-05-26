@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <iostream>
+#include <fstream>
 
 struct density_rho0{
   double rho0, c_den[100], a_den[100]; //the overall normalization factor for nuclear charge densities
@@ -223,9 +224,12 @@ int main(){
         density_rho0.a_den[ztgt] = density_rho0.a_den[ztgt]/hbarc;
         density_init(ztgt); //for initializing the nuclear form factor(density_rho0.rho0 is density const.);
     }
-//
-    if((hist_w) || (hist_x) || (hist_t) || (hist_phi_JT) || (hist_log_t) || (hist_Egamma)) fopen("lepton_v17_4_hist.txt","w");
-    if (output_event) fopen("lepton_v17_4_event.txt", "w");
+//  
+    if((hist_w) || (hist_x) || (hist_t) || (hist_phi_JT) || (hist_log_t) || (hist_Egamma)){
+        std::ofstream histFile;
+        histFile.open("lepton_v17_4_hist.txt");
+    }
+    //if (output_event){}
 //
 //	End logical assignments
 //
@@ -388,7 +392,11 @@ int main(){
         data_array[i_array] = data_array[i_array] + 1;
 //
 //	3-momentum event output
-        if(output_event) printf(4, 200) Egamma, k1[1], k1[2], k1[3], k2[1], k2[2], k2[3], ktgt[1], ktgt[2], ktgt[3];
+        if(output_event){
+            std::ofstream outputFile;
+            outputFile.open("lepton_v17_4_event.txt");
+            outputFile << Egamma << " " << k1[0] << " " << k1[1] << " " << k1[2] << " " << k2[0] << " " << k2[1] << " " << k2[2] << " " << ktgt[0] << " " << ktgt[1]<< " " << ktgt[2] << " " << "\n";
+        }
 g200:
 // format(2x, f6.3, 1x, 9(f10.6, 1x))
 //
